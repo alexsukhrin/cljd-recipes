@@ -1,0 +1,62 @@
+(ns recipes.main
+  (:require ["package:flutter/material.dart" :as m]
+            [cljd.flutter :as f]))
+
+(defrecord Recipe [label imageUrl])
+
+(def recipes 
+  [(->Recipe "Spaghetti and Meatballs" "images/pic.jpg")
+   (->Recipe "Tomato Soup" "images/pic.jpg")
+   (->Recipe "Grilled Cheese" "images/pic.jpg")
+   (->Recipe "Chocolate Chip Cookies" "images/pic.jpg")
+   (->Recipe "Taco Salad" "images/pic.jpg")
+   (->Recipe "Hawaiian Pizza" "images/pic.jpg")])
+
+(defn recipe-card [index]
+  (f/widget
+   :let [{:keys [imageUrl label]} 
+         (get recipes index)]
+   (m/Card
+    .elevation 2.0
+    .shape 
+    (m/RoundedRectangleBorder 
+     .borderRadius 
+     (m/BorderRadius.circular 10.0))
+    .child 
+    (m/Padding 
+     .padding 
+     (m/EdgeInsets.all 16.0)
+     .child 
+     (m/Column 
+      .children 
+      [(m/Image 
+        .image 
+        (m/AssetImage imageUrl))
+       (m/SizedBox 
+        .height 14.0)
+       (m/Text 
+        label 
+        .style 
+        (m/TextStyle 
+         .fontSize 20.0
+         .fontWeight m/FontWeight.w700
+         .fontFamily "Palatino"))])))))
+
+(def recipes-view
+  (m/ListView.builder
+   .itemCount (count recipes)
+   .itemBuilder (f/build [i] (recipe-card i))))
+
+(defn main []
+  (f/run 
+   (m/MaterialApp 
+    .title "Recipe Calculator" 
+    .theme (m/ThemeData 
+            .useMaterial3 true 
+            .colorScheme (m/ColorScheme.fromSeed 
+                          .seedColor m/Colors.greenAccent))) 
+   .home (m/Scaffold 
+          .appBar (m/AppBar 
+                   .title (m/Text "Recipe Calculator")))
+   .body (m/SafeArea 
+          .child recipes-view)))
